@@ -17,6 +17,12 @@ module ControllerLess
       @controller ||= controller_name.constantize
     end
 
+    def param_key
+      if resource_class.respond_to? :model_name
+        resource_class.model_name.param_key
+      else
+        resource_name.param_key
+      end
+    end
   end
-
 end

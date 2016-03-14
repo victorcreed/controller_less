@@ -1,6 +1,7 @@
 require 'controller_less/helpers/settings'
 require 'controller_less/resource.rb'
 require 'controller_less/resources_controller'
+require 'controller_less/resource_dsl'
 
 module ControllerLess
   class Application
@@ -20,8 +21,13 @@ module ControllerLess
       unless Object.const_defined?(resource.controller_name)
         eval "class ::#{resource.controller_name} < ControllerLess::ResourcesController; end"
         resource.controller.cl_config = resource
+        block_given? && hook_methods(resource, resource.resource_class, &block)
       end
       add_route(name.name.to_s.downcase.pluralize)
+    end
+    def hook_methods(config, resource_class, &block)
+      rdsl = ControllerLess::ResourceDsl.new(config, resource_class)
+      rdsl.run_registration_block(&block)
     end
     def add_route(route_name)
       (self.routes_list ||= Array.new).push(route_name)
