@@ -14,7 +14,20 @@ module ControllerLess
       resource_class_name.constantize
     end
     def controller_name
-      namespace + resource_name.name.pluralize.camelize + "Controller"
+      controller_namespace + resource_name.name.pluralize.camelize + "Controller"
+    end
+    def controller_namespace
+      if namespace.present?
+        str = ""
+        (arry = namespace.split("::")).each_with_index do |val, index|
+          str += ";module #{ index == 0 && "::" || "" }#{val}"
+        end
+        str << ";end" * arry.size
+        eval(str)
+        @namespace_name ||= namespace << "::"
+      else
+        ""
+      end
     end
     def namespace
       options.fetch(:namespace, "")

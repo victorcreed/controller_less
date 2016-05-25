@@ -18,11 +18,9 @@ module ControllerLess
     end
     def register(name, options={}, &block)
       resource = ControllerLess::Resource.new(name, options)
-      unless Object.const_defined?(resource.controller_name)
-        eval "class ::#{resource.controller_name} < ControllerLess::ResourcesController; end"
-        resource.controller.cl_config = resource
-        block_given? && hook_methods(resource, resource.resource_class, &block)
-      end
+      eval "class ::#{resource.controller_name} < ControllerLess::ResourcesController; end"
+      resource.controller.cl_config = resource
+      block_given? && hook_methods(resource, resource.resource_class, &block)
       add_route(resource.route)
     end
     def hook_methods(config, resource_class, &block)
@@ -37,11 +35,11 @@ module ControllerLess
     end
     def route_reload
       ControllerLess.application.routes_list.each  do |route_param| 
-          if route_param.respond_to?(:call)
-            Rails.application.routes.draw(&route_param)
-          else
-            Rails.application.routes.draw { send(*route_param) }
-          end
+        if route_param.respond_to?(:call)
+          Rails.application.routes.draw(&route_param)
+        else
+          Rails.application.routes.draw { send(*route_param) }
+        end
       end
     end
   end
