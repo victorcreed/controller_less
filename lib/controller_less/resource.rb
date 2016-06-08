@@ -41,19 +41,38 @@ module ControllerLess
     def build_namespace_route
       func  = "lambda do;"
       arry = options.fetch(:namespace).split("::")
-      func += arry.map { |val| "namespace(:#{val.downcase}) do" }.join(";") << (";#{simple_routes_for_namespace.join(" ")}" + ";end" * arry.size + ";end")
+      func += arry.map { |val| "namespace(:#{val.downcase}) do" }.join(";") << (";#{  belongs_to_or_simple_route }" + ";end" * arry.size + ";end")
       @build_namespace_route = eval(func)
     end
     def simple_route
-      [:resources, route_name.to_sym]
+      belongs_to_list.present? && build_nested_routes_func || [:resources, route_name.to_sym]
     end
-    def simple_routes_for_namespace
-      [:resources, "'#{route_name}'"]
+    def build_nested_routes_func
+      eval("lambda do; #{build_nested_routes};end")
+    end
+    def build_nested_routes
+      @build_nested_routes = belongs_to_list.map { |val| "resources(:#{val.to_s.pluralize}) do" }.join(";") << (";#{nested_route}" + ";end;" * belongs_to_list.size)
+      any_optional_belongs_to && @build_nested_routes << nested_route
+      @build_nested_routes
+    end
+    def belongs_to_or_simple_route
+      belongs_to_list.present? && build_nested_routes || nested_route
+    end
+    def nested_route
+      "resources '#{route_name}'"
     end
     def controller
       @controller ||= controller_name.constantize
     end
-
+    def any_optional_belongs_to=(value)
+      @any_optional_belongs_to = value
+    end
+    def any_optional_belongs_to
+      @any_optional_belongs_to ||= false
+    end
+    def belongs_to_list
+      @belongs_to_list ||= Array.new
+    end
     def param_key
       if resource_class.respond_to? :model_name
         resource_class.model_name.param_key

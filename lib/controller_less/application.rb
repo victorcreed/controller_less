@@ -20,13 +20,15 @@ module ControllerLess
       resource = ControllerLess::Resource.new(name, options)
       eval "class ::#{resource.controller_name} < ControllerLess::ResourcesController; end"
       resource.controller.cl_config = resource
-      block_given? && hook_methods(resource, resource.resource_class, &block)
+      block_given? && hook_methods( resource, &block )
       add_route(resource.route)
     end
-    def hook_methods(config, resource_class, &block)
-      rdsl = ControllerLess::ResourceDsl.new(config, resource_class)
-      rdsl.run_registration_block(&block)
+
+    def hook_methods(rsource, &block)
+      resource_dsl = ControllerLess::ResourceDsl.new rsource
+      resource_dsl.run_registration_block &block
     end
+
     def add_route(route_name)
       (self.routes_list ||= Array.new).push(route_name)
     end
