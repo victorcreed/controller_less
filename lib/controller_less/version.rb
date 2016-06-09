@@ -1,3 +1,3 @@
 module ControllerLess
-  VERSION = '0.0.5.pre'
+  VERSION = '0.0.6.pre'
 end

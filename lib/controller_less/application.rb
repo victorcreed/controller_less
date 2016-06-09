@@ -11,6 +11,8 @@ module ControllerLess
     setting :load_paths, [Rails.root.join("app", "cls")]
     setting :routes_list, []
     def setup!
+    end
+    def load!
       files.each { |file| load(file) }
     end
     def files
@@ -33,6 +35,7 @@ module ControllerLess
       (self.routes_list ||= Array.new).push(route_name)
     end
     def load_routes
+      load!
       route_reload
     end
     def route_reload
