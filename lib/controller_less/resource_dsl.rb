@@ -25,7 +25,7 @@ module ControllerLess
       resource.controller.send :belongs_to, target, options
     end
     
-    def only(args=[])
+    def only(*args)
       resource.routes_options = {only: [args].flatten}
       resource.controller.send :actions, *[args].flatten
     end
