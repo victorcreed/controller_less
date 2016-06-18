@@ -45,7 +45,7 @@ module ControllerLess
       @build_namespace_route = eval(func)
     end
     def simple_route
-      belongs_to_list.present? && build_nested_routes_func || [:resources, route_name.to_sym]
+      belongs_to_list.present? && build_nested_routes_func || [:resources, route_name.to_sym, routes_options].compact
     end
     def build_nested_routes_func
       eval("lambda do; #{build_nested_routes};end")
@@ -59,7 +59,7 @@ module ControllerLess
       belongs_to_list.present? && build_nested_routes || nested_route
     end
     def nested_route
-      "resources '#{route_name}'"
+      "resources( '#{route_name}' #{routes_options.present? && ",#{routes_options}" || ""} )"
     end
     def controller
       @controller ||= controller_name.constantize
@@ -69,6 +69,12 @@ module ControllerLess
     end
     def any_optional_belongs_to
       @any_optional_belongs_to ||= false
+    end
+    def routes_options
+      @routes_options ||= nil
+    end
+    def routes_options=(v)
+      @routes_options = v
     end
     def belongs_to_list
       @belongs_to_list ||= Array.new

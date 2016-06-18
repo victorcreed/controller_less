@@ -24,5 +24,10 @@ module ControllerLess
       resource.any_optional_belongs_to || (resource.any_optional_belongs_to = options.fetch(:optional, false))
       resource.controller.send :belongs_to, target, options
     end
+    
+    def only(args=[])
+      resource.routes_options = {only: [args].flatten}
+      resource.controller.send :actions, *[args].flatten
+    end
   end
 end
