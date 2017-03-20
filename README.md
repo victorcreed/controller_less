@@ -17,7 +17,7 @@ end
 ```
 You will also need to add this line ```ControllerLess.load_routes``` in ```config/routes.rb```.
 
-To use ControllerLess you have to create ```*_cls.rb``` in the ```app/cls``` folder. 
+To use ControllerLess you have to create ```posts_cls.rb``` in the ```app/cls``` folder. 
 ```
 ControllerLess.register Post do
 end
